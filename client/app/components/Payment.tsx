@@ -169,7 +169,7 @@ const Payment = () => {
           try {
             // Verify payment
             const verifyResponse = await fetch(
-              url + "/api/payments/verify-payment",
+              url + "/api/payments/verify-payment", // call to verify payment
               {
                 method: "POST",
                 headers: {
