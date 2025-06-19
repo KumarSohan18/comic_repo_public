@@ -173,3 +173,7 @@ This is the core backend code. It includes: ✅ **Express.js setup** ✅ **ML pi
 
 Would you like authentication (`authRoutes.js`) and MySQL user profile storage next?
 
+
+
+//docker tag comicai-frontend:v2.0 
+//311141531925.dkr.ecr.us-east-1.amazonaws.com/comic_app_image_register:frontend_latest1.0

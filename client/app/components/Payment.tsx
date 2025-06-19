@@ -9,7 +9,10 @@ declare global {
     Razorpay: any;
   }
 }
-
+const url =
+  process.env.NODE_ENV === "production"
+    ? "https://api.sohankumar.com"
+    : "http://localhost:8000";
 const Payment = () => {
   const router = useRouter();
 
@@ -50,7 +53,7 @@ const Payment = () => {
 
     // Check authentication first
     try {
-      const authResponse = await fetch("/auth/status", {
+      const authResponse = await fetch(url + "/auth/status", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -95,7 +98,7 @@ const Payment = () => {
 
     try {
       console.log("Making API request to create order");
-      const orderResponse = await fetch("/api/payments/create-order", {
+      const orderResponse = await fetch(url + "/api/payments/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,17 +168,20 @@ const Payment = () => {
           console.log("Payment success callback received:", response);
           try {
             // Verify payment
-            const verifyResponse = await fetch("/api/payments/verify-payment", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+            const verifyResponse = await fetch(
+              url + "/api/payments/verify-payment",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
 
             if (!verifyResponse.ok) {
               console.error(
@@ -216,7 +222,7 @@ const Payment = () => {
             console.log("Payment modal dismissed");
             toast("Payment cancelled");
             // Redirect to failure page when modal is dismissed
-            router.push("/payment/failure?error=cancelled");
+            router.push(url + "/payment/failure?error=cancelled");
           },
         },
         // Add notes for domain validation

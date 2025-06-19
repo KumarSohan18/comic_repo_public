@@ -15,6 +15,9 @@ import { pool } from './src/config/db.js';
 
 dotenv.config();
 
+//npm run dev : frontend
+// npm start : backend
+
 // The database configuration has been moved to src/config/db.js
 
 (async () => { // testing database connection
@@ -64,14 +67,12 @@ passport.deserializeUser((user, done) => {
 // Update CORS settings
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? 'https://sohankumar.com'
-    :   'http://localhost:3000', 
-  
+    ? ['https://sohankumar.com', 'https://www.sohankumar.com', 'https://api.sohankumar.com']
+    : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 
 app.use(express.json());
 app.use(cookieParser());
@@ -85,7 +86,8 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // age of cookie
-    sameSite: 'lax'
+    sameSite: 'lax',
+    domain: process.env.NODE_ENV === 'production' ? '.sohankumar.com' : undefined // Set domain for production
   }
 }));
 
@@ -111,7 +113,6 @@ app.use((err, req, res, next) => {
     message: err.message 
   });
 });
-
 app.use(router);
 
 // Add test endpoint for session verification

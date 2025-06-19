@@ -7,7 +7,7 @@ export default passport.use(
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: process.env.NODE_ENV === 'production'
-            ? 'https://api.sohankumar.com/auth/google/redirect'
+            ? 'https://sohankumar.com/auth/google/redirect'
             :   'http://localhost:3000/auth/google/redirect',
         scope: ['profile', 'email']
     }, async (access_token, refresh_token, profile, done) => {

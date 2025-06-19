@@ -18,10 +18,11 @@ export default function UserMenu() {
 
   // Mock data - replace with actual API calls
   const mockHistory: ComicGeneration[] = [
+    // testing the menu with mock data, remove later
     {
       id: "1",
-      prompt: "A superhero flying through space",
-      genre: "Sci-fi",
+      prompt: "mitochondria",
+      genre: "science",
       style: "American Comic",
       date: "2024-03-10",
       imageUrl: "/mock-comic-1.jpg",

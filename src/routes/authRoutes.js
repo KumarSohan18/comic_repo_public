@@ -59,7 +59,11 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/redirect', 
-  passport.authenticate('google', { failureRedirect: 'http://localhost:3000' }),
+  passport.authenticate('google', { 
+    failureRedirect: process.env.NODE_ENV === 'production' 
+      ? 'https://sohankumar.com' 
+      : 'http://localhost:3000' 
+  }),
   (req, res) => {
     const token = jwt.sign(
       { userId: req.user.id }, 
@@ -76,7 +80,10 @@ router.get('/google/redirect',
     });
 
     // Redirect to frontend
-    res.redirect('http://localhost:3000');
+    res.redirect(process.env.NODE_ENV === 'production'
+      ? 'https://sohankumar.com'
+      : 'http://localhost:3000'
+    );
   }
 );
 

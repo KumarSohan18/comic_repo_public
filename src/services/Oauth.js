@@ -2,10 +2,13 @@ import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import { query } from '../config/db.js';
 
+// reminder to remove this from the codebase
+// currentyl not being used but tried to implement in initial versions
+
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  'http://localhost:8000/auth/google/redirect'
+  'http://localhost:8000/auth/google/redirect' 
 );
 
 export async function initiateGoogleAuth(req, res) {

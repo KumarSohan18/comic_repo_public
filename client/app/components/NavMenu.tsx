@@ -30,6 +30,10 @@ const NavMenu = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
+  const url =
+    process.env.NODE_ENV === "production"
+      ? "https://api.sohankumar.com"
+      : "http://localhost:8000";
 
   useEffect(() => {
     checkAuthStatus();
@@ -37,7 +41,7 @@ const NavMenu = () => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8000/auth/status", {
+      const response = await fetch(url + "/auth/status", {
         credentials: "include",
       });
 
@@ -56,12 +60,12 @@ const NavMenu = () => {
   };
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = url + "/auth/google";
   };
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8000/auth/logout", {
+      const response = await fetch(url + "/auth/logout", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -85,14 +89,14 @@ const NavMenu = () => {
       }
     } catch (error) {
       console.error("Logout failed:", error);
-      setError("Failed to logout");
+      setError("Failed to logout. Please try again.");
     }
   };
 
   const fetchUserImages = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:8000/user/images", {
+      const response = await fetch(url + "user/images", {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch images");
@@ -330,7 +334,7 @@ const NavMenu = () => {
             </div>
           </div>
           <iframe
-            src={`https://comicimages3upload.s3.us-east-1.amazonaws.com/Sohan+resume+draft+2.0.pdf#toolbar=0&navpanes=0&statusbar=0&scrollbar=0&view=FitH&pagemode=none&buttons=0&cursortools=0&displaydoctitle=0&download=0&messages=0&print=0&zoom=0`}
+            src={`https://comicimages3upload.s3.us-east-1.amazonaws.com/Sohan+resume+draft+2.0.pdf#view=FitH&toolbar=0`}
             title="My Resume"
             className="w-full border-none"
             style={{

@@ -3,6 +3,7 @@ import { generateImage } from '../controllers/mlcontroller.js';
 import { validateImageRequest } from '../middleware/validationMiddleware.js';
 import { pool } from '../config/db.js';
 import { authenticateUser } from '../middleware/authMiddleware.js';
+import { checkBadWords } from '../controllers/badwords.js';
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.get('/', (request, response) => {
 
 router.post('/generate', 
   validateImageRequest,
+  checkBadWords,
   generateImage
 );
 

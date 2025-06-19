@@ -19,6 +19,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const router = useRouter();
+  const url =
+    process.env.NODE_ENV === "production"
+      ? "https://api.sohankumar.com"
+      : "http://localhost:8000";
 
   useEffect(() => {
     // Set page as loaded when component mounts
@@ -40,11 +44,10 @@ export default function Home() {
 
       console.log("Cookie present:", document.cookie.includes("token"));
 
-      // Create an AbortController for timeout handling
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 30 second timeout
 
-      const response = await fetch("http://localhost:8000/generate", {
+      const response = await fetch(url + "/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,15 +80,20 @@ export default function Home() {
             "Request timed out. The server is taking too long to respond."
           );
         }
+        if (response.status === 400) {
+          throw new Error(
+            "Profanity detected ! Inappropriate request. Please check your input and try again."
+          );
+        }
         throw new Error(
-          "Failed to generate image. Please try again or modify your request."
+          "Failed to generate comic. Please try again or modify your request."
         );
       }
 
       const result = await response.json();
       if (!result.image_url) {
         throw new Error(
-          "No image was generated. Please try again with different parameters."
+          "No comic was generated. Please try again with different parameters."
         );
       }
 
@@ -93,7 +101,9 @@ export default function Home() {
     } catch (error: any) {
       console.error("Generation error:", error);
       if (error.name === "AbortError") {
-        setError("Request timed out. The server took too long to respond.");
+        setError(
+          "Request timed out. The server is busy. Urge to try again later."
+        );
       } else {
         setError(error instanceof Error ? error.message : "An error occurred");
       }
@@ -159,7 +169,7 @@ export default function Home() {
                 <p>{error}</p>
                 {error.includes("GitHub") && (
                   <a
-                    href="https://github.com/yourusername/yourrepo"
+                    href="https://github.com/kumarsohan18/" // need to change this later, important
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline hover:text-red-300 ml-1"
@@ -183,7 +193,7 @@ export default function Home() {
                 rows={4}
                 required
                 className="w-full p-2 bg-purple-50/80 text-purple-900 placeholder-purple-400 border-2 border-purple-200 focus:outline-none focus:border-purple-400 transition-colors text-sm rounded-lg font-medium min-h-[120px] sm:min-h-[160px] resize-none"
-                placeholder="Describe your comic scene..."
+                placeholder="Describe your prompt. A single sentence should suffice. Example: 'Explain the concept of white blood cells.'"
               />
             </div>
 
@@ -249,7 +259,7 @@ export default function Home() {
                 id="exclude"
                 name="exclude"
                 className="w-full p-2 bg-purple-50/80 text-purple-900 placeholder-purple-400 border-2 border-purple-200 focus:outline-none focus:border-purple-400 transition-colors rounded-lg text-sm font-medium h-10"
-                placeholder="Elements to exclude. Example: 'blood, gore, violence' default will be violence"
+                placeholder="Elements to exclude. Example: 'blood, gore' default will be violence"
               />
             </div>
 
@@ -277,14 +287,15 @@ export default function Home() {
             <div className="mt-6 text-center border-t border-purple-100 pt-6">
               <p className="text-gray-600 text-sm mb-2">
                 To generate more comic panels or to access more generation
-                functionalty, sign up and checkout our premium services.
+                functionalty,checkout our premium services. Login required.
               </p>
               <p className="text-gray-500 text-xs">
                 (Upon clicking, you will be redirected to a secure Razorpay
-                Payment gateway)
+                Payment gateway ,currently set to demo mode so no actual payment
+                will be allowed. )
               </p>
               <button
-                onClick={() => router.push("/payment")}
+                onClick={() => router.push("/payment")} // check needed
                 className="mt-3 text-purple-600 hover:text-purple-700 text-sm font-medium hover:underline transition-colors"
               >
                 Upgrade to Premium →
