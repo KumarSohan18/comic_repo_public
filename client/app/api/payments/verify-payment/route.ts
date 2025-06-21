@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     
     // Forward the request to our backend server
-    const backendUrl = `${process.env.BACKEND_URL}/payments/verify-payment`;
+    const backendUrl = `${process.env.NODE_ENV === 'production' ? 'https://api.sohankumar.com' : 'http://localhost:8000'}/payments/verify-payment`;
     
     // Get all cookies from the request to pass along for authentication
     const cookieStore = cookies();

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
     
     // Forward the request to our backend server
-    const backendUrl = `${process.env.BACKEND_URL}/payments/create-order`;
+    const backendUrl = `${process.env.NODE_ENV === 'production' ? 'https://api.sohankumar.com' : 'http://localhost:8000'}/payments/create-order`;
     
     // Get all cookies from the request to pass along for authentication
     const cookieStore = cookies();

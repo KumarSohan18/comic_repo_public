@@ -18,7 +18,6 @@ const PaymentFailureContent = () => {
     setErrorCode(code);
   }, [searchParams]);
 
-  // Map error types to user-friendly messages
   const getErrorMessage = () => {
     switch (errorType) {
       case "verification_failed":

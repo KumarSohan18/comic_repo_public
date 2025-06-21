@@ -11,8 +11,8 @@ declare global {
 }
 const url =
   process.env.NODE_ENV === "production"
-    ? "https://api.sohankumar.com"
-    : "http://localhost:8000";
+    ? "https://sohankumar.com"
+    : "http://localhost:3000";
 const Payment = () => {
   const router = useRouter();
 
@@ -76,14 +76,14 @@ const Payment = () => {
       if (!authData.isAuthenticated) {
         console.error("User is not authenticated");
         toast.error("Please login before making a payment");
-        router.push("/login");
+        router.push("/auth/google");
         return;
       }
       console.log("Authentication confirmed with user:", authData.user);
     } catch (error) {
       console.error("Failed to check authentication:", error);
       toast.error("Authentication check failed. Please login again.");
-      router.push("/login");
+      router.push("/auth/google");
       return;
     }
 
@@ -127,7 +127,7 @@ const Payment = () => {
 
         if (orderResponse.status === 401) {
           toast.error("Please login first");
-          router.push("/login");
+          router.push("/auth/google");
           return;
         }
         throw new Error(errorMessage);

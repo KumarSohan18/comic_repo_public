@@ -104,7 +104,7 @@ const NavMenu = () => {
       setUserImages(data.images || []);
     } catch (error) {
       console.error("Error fetching user images:", error);
-      setError("Failed to fetch images");
+      //setError("Failed to fetch images");
     } finally {
       setIsLoading(false);
     }

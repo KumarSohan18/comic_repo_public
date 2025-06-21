@@ -63,7 +63,8 @@ const PaymentSuccessContent = () => {
             href="/profile"
             className="inline-block w-full py-3 px-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors"
           >
-            View My Credits
+            View My Credits.Since this is a demo, your credits will not be
+            saved. but you have been given unlimited credits for this demo.
           </Link>
         </div>
       </div>
@@ -76,7 +77,7 @@ const PaymentSuccessPage = () => {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          Loading...
+          Loading... Please wait.
         </div>
       }
     >
