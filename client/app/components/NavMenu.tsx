@@ -96,7 +96,7 @@ const NavMenu = () => {
   const fetchUserImages = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(url + "user/images", {
+      const response = await fetch(url + "/user/images", {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch images");
