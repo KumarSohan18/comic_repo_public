@@ -19,6 +19,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const router = useRouter();
+  const [imageLoading, setImageLoading] = useState(false);
+
   const url =
     process.env.NODE_ENV === "production"
       ? "https://api.sohankumar.com"
@@ -313,6 +315,9 @@ export default function Home() {
                   <div className="text-white text-lg">Loading image...</div>
                 ) : (
                   <>
+                    {imageLoading && (
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to blue animate-pulse z-20"></div>
+                    )}
                     <Image
                       src={imageUrl}
                       alt="Generated comic"
@@ -320,8 +325,10 @@ export default function Home() {
                       height={600}
                       className="w-full h-auto"
                       priority
-                      onLoadingComplete={() => {}}
+                      onLoadStart={() => setImageLoading(true)}
+                      onLoadingComplete={() => setImageLoading(false)}
                       onError={(e) => {
+                        setImageLoading(false);
                         console.error("Image failed to load:", imageUrl);
                         const target = e.target as HTMLImageElement;
                         if (target) {
@@ -338,7 +345,8 @@ export default function Home() {
                       style={{ display: "none" }}
                     >
                       <p>
-                        Image is available but cannot be displayed directly.
+                        Image is available but failed to load. please check your
+                        internet connection or try again later.
                         <br />
                         Please use the &quot;View Full Image&quot; button below.
                       </p>

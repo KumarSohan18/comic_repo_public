@@ -66,9 +66,21 @@ passport.deserializeUser((user, done) => {
 
 // Update CORS settings
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://sohankumar.com', 'https://www.sohankumar.com', 'https://api.sohankumar.com']
-    : 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://sohankumar.com',
+      'https://www.sohankumar.com',
+      'https://api.sohankumar.com',
+      'http://localhost:3000'
+    ];
+    // Allow requests with no origin (like curl or server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -81,12 +93,12 @@ app.use(session({
   name: 'sessionId', // Add explicit cookie name
   secret: process.env.SESSION_SECRET || "sohan the developer",
   resave: false,
-  saveUninitialized: true, // Changed to true to debug session creation
+  saveUninitialized: false, // Changed to true to debug session creation
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // age of cookie
-    sameSite: 'lax',
+    sameSite: 'lax', // if doesnt work change to 'none'
     domain: process.env.NODE_ENV === 'production' ? '.sohankumar.com' : undefined // Set domain for production
   }
 }));
@@ -105,14 +117,7 @@ app.use(passport.session());
 // Use the auth routes
 app.use('/auth', authRoutes);
 
-// Add error handling middleware at the top
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Something went wrong!',
-    message: err.message 
-  });
-});
+
 app.use(router);
 
 // Add test endpoint for session verification
@@ -183,6 +188,15 @@ const startServer = async () => {
 startServer().catch(err => {
   console.error('Failed to start server:', err);
   process.exit(1);
+});
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Something went wrong!',
+    message: err.message 
+  });
 });
 
 export { pool };
