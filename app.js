@@ -31,6 +31,7 @@ dotenv.config();
 })();
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy for secure cookies
 
 // Create MySQL Session Store
 const MySQLStoreSession = MySQLStore(session);

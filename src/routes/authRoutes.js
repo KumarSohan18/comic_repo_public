@@ -7,14 +7,29 @@ const router = Router();
 // Auth status endpoint
 router.get('/status', (req, res) => {
   try {
-    res.json({ 
-      isAuthenticated: !!(req.user || req.session.userId),
-      user: req.user || null
+    let user = null;
+    let isAuthenticated = false;
+
+    // Check for JWT token in cookies
+    const token = req.cookies.token;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = decoded;
+        isAuthenticated = true;
+      } catch (err) {
+        isAuthenticated = false;
+      }
+    }
+
+    res.json({
+      isAuthenticated,
+      user
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Auth status check failed',
-      message: error.message 
+      message: error.message
     });
   }
 });
@@ -75,7 +90,8 @@ router.get('/google/redirect',
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      domain: process.env.NODE_ENV === 'production' ? '.sohankumar.com' : undefined,
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
