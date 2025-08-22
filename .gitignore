@@ -1,6 +1,6 @@
 /src/tests
-.env
+#.env
 
 node_modules
-.env
+#.env
 .vscode/
