@@ -1,0 +1,49 @@
+
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: us-east-1
+    FRONTEND_IMAGE_REPO: 311141531925.dkr.ecr.us-east-1.amazonaws.com/comic_app_image_register
+    BACKEND_IMAGE_REPO: 311141531925.dkr.ecr.us-east-1.amazonaws.com/comic_app/backend
+    IMAGE_TAG: latest
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 311141531925.dkr.ecr.us-east-1.amazonaws.com
+      - echo Sankmrhyd2002 | docker login --username namelessking18 --password-stdin
+      - npm install
+      - echo Installing frontend dependencies...
+      - cd client && npm install && cd ..
+  build:
+    commands:
+      - echo Building frontend...
+      - cd client && npm run build && cd ..
+      - echo Building backend Docker image...
+      - docker build -t $BACKEND_IMAGE_REPO:$IMAGE_TAG .
+      - echo Building frontend Docker image...
+      - docker build -t $FRONTEND_IMAGE_REPO:$IMAGE_TAG ./client
+  post_build:
+    commands:
+      - echo Pushing backend Docker image...
+      - docker push $BACKEND_IMAGE_REPO:$IMAGE_TAG
+      - echo Pushing frontend Docker image...
+      - docker push $FRONTEND_IMAGE_REPO:$IMAGE_TAG
+      - echo Creating imagedefinitions.json for ECS deployment...
+      - |
+          cat <<EOF > imagedefinitions.json
+          [
+            {"name":"backend","imageUri":"$BACKEND_IMAGE_REPO:$IMAGE_TAG"},
+            {"name":"frontend","imageUri":"$FRONTEND_IMAGE_REPO:$IMAGE_TAG"}
+          ]
+          EOF
+artifacts:
+  files:
+    - imagedefinitions.json
+

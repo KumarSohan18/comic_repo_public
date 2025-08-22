@@ -45,7 +45,13 @@ router.post('/logout', (req, res) => {
         });
       }
       
-      res.clearCookie('token');
+      res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.sohankumar.com' : undefined,
+        path: '/'
+      });
       req.session.destroy((err) => {
         if (err) {
           return res.status(500).json({ 

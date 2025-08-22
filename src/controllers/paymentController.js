@@ -52,7 +52,7 @@ export const createOrder = async (req, res) => {
       return res.status(401).json({ error: 'User ID not found' });
     }
     
-    console.log('Authenticated user ID:', userId);
+    //console.log('Authenticated user ID:', userId);
     
     const { planType = 'BASIC' } = req.body;
     const plan = PAYMENT_PLANS[planType];
@@ -62,7 +62,7 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ error: 'Invalid plan type' });
     }
 
-    console.log('Creating order with plan:', planType, 'Amount:', plan.amount);
+    //console.log('Creating order with plan:', planType, 'Amount:', plan.amount);
     
     const options = {
       amount: plan.amount * 100, 
@@ -70,7 +70,7 @@ export const createOrder = async (req, res) => {
       receipt: `receipt_${Date.now()}`,
     };
 
-    console.log('Creating Razorpay order with options:', options);
+    //console.log('Creating Razorpay order with options:', options);
     
     // Validate Razorpay credentials before creating order
     if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
@@ -79,7 +79,7 @@ export const createOrder = async (req, res) => {
     }
     
     const order = await razorpay.orders.create(options);
-    console.log('Razorpay order created:', order.id);
+    //console.log('Razorpay order created:', order.id);
     
     // Update user with order details - use userId instead of req.user.id
     await userModel.updateUserOrder(
@@ -88,7 +88,7 @@ export const createOrder = async (req, res) => {
       plan.amount,
       'pending'
     );
-    console.log('User order updated in database');
+    //console.log('User order updated in database');
 
     const response = {
       orderId: order.id,
@@ -97,7 +97,7 @@ export const createOrder = async (req, res) => {
       keyId: RAZORPAY_KEY_ID, // Make sure this matches the property name expected by frontend
     };
     
-    console.log('Sending order response with keyId:', RAZORPAY_KEY_ID);
+    //console.log('Sending order response with keyId:', RAZORPAY_KEY_ID);
     res.json(response);
   } catch (error) {
     console.error('Error creating order:', error);
@@ -107,7 +107,7 @@ export const createOrder = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    console.log('Payment verification request received:', req.body);
+    //console.log('Payment verification request received:', req.body);
     
     const {
       razorpay_order_id,
@@ -116,9 +116,9 @@ export const verifyPayment = async (req, res) => {
     } = req.body;
 
     // Detailed logging
-    console.log(`Exact razorpay_order_id: '${razorpay_order_id}'`);
-    console.log(`Type: ${typeof razorpay_order_id}, Length: ${razorpay_order_id.length}`);
-    console.log(`Character codes:`, Array.from(razorpay_order_id).map(c => c.charCodeAt(0)));
+   // console.log(`Exact razorpay_order_id: '${razorpay_order_id}'`);
+    //console.log(`Type: ${typeof razorpay_order_id}, Length: ${razorpay_order_id.length}`);
+    //console.log(`Character codes:`, Array.from(razorpay_order_id).map(c => c.charCodeAt(0)));
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       console.error('Verification failed: Missing required parameters');
@@ -146,31 +146,31 @@ export const verifyPayment = async (req, res) => {
     
     try {
       const [directCheck] = await query("SELECT id, order_id FROM users WHERE order_id = ?", [razorpay_order_id]);
-      console.log(`Direct DB check for '${razorpay_order_id}':`, directCheck);
+      //console.log(`Direct DB check for '${razorpay_order_id}':`, directCheck);
       
       // Check if directCheck exists and has contents
       if (directCheck && Array.isArray(directCheck) && directCheck.length > 0) {
         userId = directCheck[0].id;
-        console.log(`Found user ID in DB check: ${userId}`);
+        //console.log(`Found user ID in DB check: ${userId}`);
       } else if (directCheck && typeof directCheck === 'object' && directCheck.id !== undefined) {
         // Handle case where MySQL returns an object directly instead of an array
         userId = directCheck.id;
-        console.log(`Found user ID (direct object): ${userId}`);
+        //console.log(`Found user ID (direct object): ${userId}`);
       } else {
-        console.error('Direct check returned empty result:', directCheck);
+        //console.error('Direct check returned empty result:', directCheck);
         return res.status(404).json({ error: 'Order not found in database' });
       }
     } catch (error) {
-      console.error('Database query error:', error);
+      //console.error('Database query error:', error);
       return res.status(500).json({ error: 'Database query failed', details: error.message });
     }
     
     if (userId === null) {
-      console.error('Verification failed: Could not extract valid user ID');
+      //console.error('Verification failed: Could not extract valid user ID');
       return res.status(404).json({ error: 'Valid user ID not found' });
     }
     
-    console.log(`Processing payment for user ID: ${userId}`);
+    //console.log(`Processing payment for user ID: ${userId}`);
     
     // Update payment status and add credits directly
     try {
@@ -182,7 +182,7 @@ export const verifyPayment = async (req, res) => {
         PAYMENT_PLANS.BASIC.sceneLimit 
       );
       
-      console.log('Payment completed and credits added for user:', userId);
+      //console.log('Payment completed and credits added for user:', userId);
   
       return res.json({
         success: true,

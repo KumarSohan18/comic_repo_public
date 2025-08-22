@@ -71,7 +71,7 @@ const Payment = () => {
       }
 
       const authData = await authResponse.json();
-      console.log("Auth status data:", authData);
+      //console.log("Auth status data:", authData);
 
       if (!authData.isAuthenticated) {
         console.error("User is not authenticated");
@@ -136,7 +136,7 @@ const Payment = () => {
       let orderData;
       try {
         orderData = await orderResponse.json();
-        console.log("Order created successfully:", orderData);
+        // console.log("Order created successfully:", orderData);
       } catch (e) {
         console.error("Failed to parse order response:", e);
         throw new Error("Invalid response from server");
@@ -149,12 +149,12 @@ const Payment = () => {
       }
 
       if (!orderData.keyId) {
-        console.error("Missing keyId in order response:", orderData);
+        // console.error("Missing keyId in order response:", orderData);
         toast.error("Payment gateway configuration missing");
         return;
       }
 
-      console.log("Got keyId from server:", orderData.keyId);
+      // console.log("Got keyId from server:", orderData.keyId);
 
       // Initialize Razorpay options
       const options = {
@@ -165,7 +165,7 @@ const Payment = () => {
         description: "Purchase Credits",
         order_id: orderData.orderId,
         handler: async (response: any) => {
-          console.log("Payment success callback received:", response);
+          // console.log("Payment success callback received:", response);
           try {
             // Verify payment
             const verifyResponse = await fetch(
@@ -232,14 +232,14 @@ const Payment = () => {
         },
       };
 
-      console.log("Initializing Razorpay with options:", options);
+      // console.log("Initializing Razorpay with options:", options);
       try {
         // Validate Razorpay is available
         if (typeof window.Razorpay !== "function") {
-          console.error(
-            "Razorpay not available as a function. window.Razorpay:",
-            window.Razorpay
-          );
+          // console.error(
+          //   "Razorpay not available as a function. window.Razorpay:",
+          //   window.Razorpay
+          // );
           // Try to re-load the script as a last resort
           await loadRazorpayScript();
           if (typeof window.Razorpay !== "function") {
@@ -248,24 +248,24 @@ const Payment = () => {
           }
         }
 
-        console.log("Creating Razorpay instance with key:", options.key);
-        console.log("Order ID to be used:", options.order_id);
+        // console.log("Creating Razorpay instance with key:", options.key);
+        // console.log("Order ID to be used:", options.order_id);
 
         try {
           // Create Razorpay instance
           const razorpay = new window.Razorpay(options);
-          console.log("Razorpay instance created:", !!razorpay);
+          // console.log("Razorpay instance created:", !!razorpay);
 
           // Setting up event listeners
           razorpay.on("payment.failed", function (response: any) {
-            console.error("Payment failed:", response.error);
+            // console.error("Payment failed:", response.error);
             toast.error(`Payment failed: ${response.error.description}`);
           });
 
           // Open the payment modal
-          console.log("Opening payment modal...");
+          // console.log("Opening payment modal...");
           razorpay.open();
-          console.log("Payment modal opened successfully");
+          // console.log("Payment modal opened successfully");
         } catch (error) {
           console.error("Failed to initialize Razorpay instance:", error);
           toast.error("Could not initialize payment gateway");

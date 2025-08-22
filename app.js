@@ -15,12 +15,12 @@ import { pool } from './src/config/db.js';
 
 dotenv.config();
 
-//npm run dev : frontend
-// npm start : backend
+//npm run dev : frontend locall
+// npm start : backend local
 
 // The database configuration has been moved to src/config/db.js
 
-(async () => { // testing database connection
+(async () => { // testing database connection, reminder to remove later
   try {
     const connection = await pool.getConnection();
     console.log('Successfully connected to AWS RDS MySQL database');
@@ -38,8 +38,8 @@ const MySQLStoreSession = MySQLStore(session);
 
 // Session store configuration
 const sessionStore = new MySQLStoreSession({
-  createDatabaseTable: true,    // Automatically create sessions table
-  schema: {
+  createDatabaseTable: true,    // Automatically create sessions table, if it doesn't exist
+  schema: {                              // check the inbound rules for vpc, further reminder if connection fails
     tableName: 'sessions',
     columnNames: {
       session_id: 'session_id',
@@ -83,7 +83,7 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST'], // remove put and delete, reminder !
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -106,9 +106,9 @@ app.use(session({
 
 // Add session debugging middleware
 app.use((req, res, next) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session Data:', req.session);
-  console.log('Is Session New?:', req.session.isNew);
+  //console.log('Session ID:', req.sessionID);
+  //console.log('Session Data:', req.session);
+  //console.log('Is Session New?:', req.session.isNew);
   next();
 });
 

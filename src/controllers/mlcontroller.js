@@ -48,7 +48,8 @@ export async function generateImage(req, res) {
       status: response.data.status,
       message: response.data.message,
       uuid: response.data.uuid,
-      image_url: response.data.image_url
+      image_url: response.data.image_url,
+      mcqs: response.data.mcqs || []
     });
   } catch (error) {
     console.error('Image generation error:', error);

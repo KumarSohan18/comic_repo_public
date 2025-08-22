@@ -6,6 +6,7 @@ import NavMenu from "./components/NavMenu";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Cinzel } from "next/font/google";
+import React from "react";
 
 const cinzel = Cinzel({
   weight: ["600", "700"],
@@ -20,6 +21,9 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const router = useRouter();
   const [imageLoading, setImageLoading] = useState(false);
+  const [mcqs, setMcqs] = useState<any[]>([]);
+  const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   const url =
     process.env.NODE_ENV === "production"
@@ -44,10 +48,10 @@ export default function Home() {
       const style = formData.get("style") as string;
       const exclude = (formData.get("exclude") as string) || "violence";
 
-      console.log("Cookie present:", document.cookie.includes("token"));
+      //console.log("Cookie present:", document.cookie.includes("token"));
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 30 second timeout
 
       const response = await fetch(url + "/generate", {
         method: "POST",
@@ -98,8 +102,17 @@ export default function Home() {
           "No comic was generated. Please try again with different parameters."
         );
       }
-
       setImageUrl(result.image_url);
+
+      // MCQ handling
+      if (result.mcqs && result.mcqs.length > 0) {
+        const parsed = parseMcqs(result.mcqs);
+        setMcqs(parsed);
+        setSelectedAnswers(Array(parsed.length).fill(-1));
+        setShowResults(false);
+      } else {
+        setMcqs([]);
+      }
     } catch (error: any) {
       console.error("Generation error:", error);
       if (error.name === "AbortError") {
@@ -113,6 +126,48 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+
+  // Helper: Parse MCQ string array to array of questions
+  function parseMcqs(mcqArr: string[]): any[] {
+    if (!mcqArr || !mcqArr.length) return [];
+    const mcqStr = mcqArr.join("\n");
+    // Split by question number (e.g., 4. **Question 4: ...)
+    const questionBlocks = mcqStr
+      .split(/\n\d+\.\s+\*\*Question.*?\*\*/g)
+      .filter(Boolean);
+
+    // Find all question headers
+    const questionHeaders = [
+      ...mcqStr.matchAll(/\n(\d+)\.\s+\*\*Question.*?\*\*\n/g),
+    ].map((m) => m[0]);
+
+    return questionBlocks.map((block, idx) => {
+      // Get question text
+      const questionMatch = block.match(/^\s*(.*?)\n\s*-\s*A\)/s);
+      const question = questionHeaders[idx]
+        ? questionHeaders[idx]
+            .replace(/\n|\*\*/g, "")
+            .replace(/^\d+\.\s+/, "")
+            .trim()
+        : questionMatch
+        ? questionMatch[1].trim()
+        : "";
+
+      // Get options
+      const options = [];
+      const optionRegex = /-\s([A-D])\)\s(.+)/g;
+      let match;
+      while ((match = optionRegex.exec(block))) {
+        options.push(match[2].trim());
+      }
+
+      // Get correct answer
+      const correctMatch = block.match(/- Correct Answer:\s([A-D])\)/);
+      const correct = correctMatch ? "ABCD".indexOf(correctMatch[1]) : -1;
+
+      return { question, options, correct };
+    });
+  }
 
   if (pageLoading) {
     return (
@@ -367,6 +422,98 @@ export default function Home() {
                   </a>
                 </div>
               )}
+            </div>
+          )}
+
+          {imageUrl && mcqs.length > 0 && (
+            <div className="mt-8 bg-purple-50/80 border border-purple-200 rounded-lg p-6 shadow-inner">
+              <h3 className="text-lg sm:text-xl font-bold text-purple-700 mb-4 text-center">
+                Test Your Knowledge!
+              </h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setShowResults(true);
+                }}
+              >
+                {mcqs.map((mcq, qIdx) => (
+                  <div key={qIdx} className="mb-6">
+                    <div className="font-semibold text-purple-900 mb-2">
+                      {qIdx + 1}. {mcq.question}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {mcq.options.map((opt: string, oIdx: number) => {
+                        const isSelected = selectedAnswers[qIdx] === oIdx;
+                        const isCorrect = mcq.correct === oIdx;
+                        const showFeedback = showResults && isSelected;
+                        return (
+                          <label
+                            key={oIdx}
+                            className={`flex items-center p-2 rounded cursor-pointer border transition
+                    ${
+                      showResults
+                        ? isCorrect
+                          ? "bg-green-100 border-green-400"
+                          : isSelected
+                          ? "bg-red-100 border-red-400"
+                          : "bg-white border-gray-200"
+                        : isSelected
+                        ? "bg-blue-100 border-blue-400"
+                        : "bg-white border-gray-200"
+                    }
+                  `}
+                          >
+                            <input
+                              type="radio"
+                              name={`mcq-${qIdx}`}
+                              value={oIdx}
+                              checked={isSelected}
+                              disabled={showResults}
+                              onChange={() => {
+                                if (showResults) return;
+                                const updated = [...selectedAnswers];
+                                updated[qIdx] = oIdx;
+                                setSelectedAnswers(updated);
+                              }}
+                              className="mr-2 accent-purple-600"
+                            />
+                            <span className="text-black">{opt}</span>
+                            {showFeedback && isCorrect && (
+                              <span className="ml-2 text-green-600 font-bold">
+                                ✓ Correct
+                              </span>
+                            )}
+                            {showFeedback && !isCorrect && isSelected && (
+                              <span className="ml-2 text-red-600 font-bold">
+                                ✗ Incorrect
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+                {!showResults && (
+                  <button
+                    type="submit"
+                    className="w-full py-2 mt-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-bold text-sm uppercase tracking-widest transition-all border-2 border-transparent shadow-lg hover:shadow-xl"
+                  >
+                    Check Answers
+                  </button>
+                )}
+                {showResults && (
+                  <div className="text-center mt-4 text-purple-700 font-semibold">
+                    You got{" "}
+                    {
+                      mcqs.filter(
+                        (mcq, idx) => selectedAnswers[idx] === mcq.correct
+                      ).length
+                    }{" "}
+                    out of {mcqs.length} correct!
+                  </div>
+                )}
+              </form>
             </div>
           )}
         </div>
