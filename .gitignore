@@ -1,6 +1,8 @@
 /src/tests
-#.env
-
+.env
+/src/controllers/paymentController.js
+buildspec.yml
+imaagedefinitions.json
 node_modules
-#.env
+.env
 .vscode/
