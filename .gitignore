@@ -1,12 +1,39 @@
-/src/tests
+# Environment variables
 .env
-/src/controllers/paymentController.js
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Dependencies
+node_modules/
+
+# Build outputs
+/dist
+/build
+/.next
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# AWS and deployment files
 buildspec.yml
 imagedefinitions.json
-node_modules
-.env
-.vscode/
-server.js
+
+# Testing
 testing.txt
+
+# Sensitive files
+server.js
+/src/controllers/paymentController.js
 /client/app/components/payment.tsx
 /client/next.config.mjs
