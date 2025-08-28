@@ -34,6 +34,6 @@ testing.txt
 
 # Sensitive files
 server.js
-/src/controllers/paymentController.js
-/client/app/components/payment.tsx
-/client/next.config.mjs
+src/controllers/paymentController.js
+client/app/components/payment.tsx
+client/next.config.mjs
