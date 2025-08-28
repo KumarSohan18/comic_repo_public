@@ -2,7 +2,11 @@
 .env
 /src/controllers/paymentController.js
 buildspec.yml
-imaagedefinitions.json
+imagedefinitions.json
 node_modules
 .env
 .vscode/
+server.js
+testing.txt
+/client/app/components/payment.tsx
+/client/next.config.mjs
