@@ -1,0 +1,17 @@
+transformers
+ipywidgets
+accelerate
+bitsandbytes
+einops
+sentencepiece
+diffusers
+protobuf
+matplotlib
+fastapi
+vllm
+deepspeed
+fastapi
+uvicorn
+Pillow
+boto3
+asyncio
