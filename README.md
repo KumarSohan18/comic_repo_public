@@ -186,7 +186,7 @@ Designed a robust system capable of handling real-world load
 
 Combined DSA knowledge, ML engineering, and UI/UX for a meaningful goal
 
-Tech Stack Overview
+# Tech Stack Overview
 
 Languages: Python, JavaScript (TypeScript), SQL
 
