@@ -97,7 +97,7 @@ Modularizing Python projects
 
 Deploying real-time inference services
 
-Backend Architecture
+# Backend Architecture
 
 The backend, built using Express.js, sits between the frontend and ML pipeline.
 
@@ -125,13 +125,13 @@ Returns comic’s public URL to frontend
 
 If the user is logged in, their comic is also saved to their dashboard.
 
-Database Schema:
+# Database Schema:
 
 One table for session management
 
 One table for Google OAuth members
 
-Frontend Design
+# Frontend Design
 
 Built with Next.js + TailwindCSS, with a colourful, visually appealing design.
 
@@ -147,7 +147,7 @@ REST API integration with backend
 
 Dashboard to view saved comics
 
-DevOps & CI/CD
+# DevOps & CI/CD
 
 One of my biggest goals was to learn AWS + DevOps hands-on.
 I chose not to use Vercel or other managed platforms.
